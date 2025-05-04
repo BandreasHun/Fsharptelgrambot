@@ -1,74 +1,183 @@
-# WepeBot
+WepeBot
+Real-time “alpha call” tracker for the Wepe community (≈1200 members), built in F#.
 
-WepeBot is a Telegram bot written in F# for tracking and managing "alpha calls" (cryptocurrency contract announcements) with live price updates from Dexscreener. It supports adding, listing, removing, and updating tracked tokens, and can periodically post updates to a Telegram chat.
+WepeBot is a Telegram bot that automates tracking of new token listings (“alpha calls”), fetching live price data from Dexscreener and surfacing percentage changes directly in your group chat. It was created to save manual lookups and give the Wepe alpha group instant alerts. Once the exam period is over, I will collaborate with another developer to extend its features even further.
 
-## Features
+Live Demo
+Join our public Telegram group to see WepeBot in action (admin rights required):
+👉 https://t.me/+Cw26psLlUx84ODE8
 
-- Add new alpha calls by extracting contract address and chain from a description (uses OpenAI API).
-- Fetches live price and token info from Dexscreener.
-- List all tracked alpha calls with current price, start price, and percentage change.
-- Remove or update alpha calls by index.
-- Periodic update loop to post alpha call status at a set interval.
-- Admin-only command access.
+⚠️ Note: Bot commands require admin privileges. As soon as you join, send me a message and I’ll grant you the rights needed to interact.
 
-## Commands
+Screenshots
+(Add screenshots here. Example:)
 
+
+Features
+Add New Alpha Calls
+Extracts contract address and chain automatically via OpenAI API.
+
+Live Price Updates
+Queries Dexscreener for up to 300 requests/minute.
+
+List & Stats
+Shows current vs. start price and Δ% change.
+
+Remove & Edit
+/removecall <index> and /changestart <index> <price>.
+
+Automated Loop
+/start begins periodic postings; /interval <minutes> adjusts frequency; /stop ends the loop.
+
+Admin-Only Access
+Only group admins can manage calls.
+
+Persistence
+Saves state in state.json and reloads on startup.
+
+Commands & Usage
 All commands must be issued by a Telegram group admin.
 
-- `/addalphacall <description>`  
-  Extracts contract address and chain from the description, fetches token info, and adds it to the tracked list.
+Command	Description
+/addalphacall <description>	Extracts CA & chain, fetches token info, and adds a new alpha call.
+/getalpha	Lists all tracked calls with live price, start price, and percentage change.
+/removecall <index>	Removes the alpha call at the given index.
+/changestart <index> <price>	Updates the start price for the specified call.
+/start	Starts the periodic update loop.
+/interval <minutes>	Sets loop interval in minutes.
+/stop	Stops the periodic update loop.
 
-- `/getalpha`  
-  Lists all tracked alpha calls with live price and stats.
+How It Works
+/addalphacall
 
-- `/removecall <index>`  
-  Removes the alpha call at the given index (see `/getalpha` for indices).
+Sends your description to OpenAI to extract the contract address (CA) and chain name.
 
-- `/changestart <index> <newprice>`  
-  Changes the start price for the alpha call at the given index.
+Queries Dexscreener for token metadata and price, then stores the call.
 
-- `/start`  
-  Starts the periodic update loop (posts alpha call status every interval).
+/getalpha
 
-- `/stop`  
-  Stops the periodic update loop.
+Fetches the latest price for each saved call, calculates Δ%, and posts results.
 
-- `/interval <minutes>`  
-  Sets the interval (in minutes) for the periodic update loop.
+/removecall & /changestart
 
-## How It Works
+Manage your saved calls by index.
 
-1. **Adding an Alpha Call:**  
-   When you use `/addalphacall`, the bot uses OpenAI to extract the contract address and chain from your description. It then queries Dexscreener for token info and adds it to the tracked list.
+Periodic Updates
 
-2. **Listing Alpha Calls:**  
-   `/getalpha` fetches the latest price for each tracked token from Dexscreener and displays the current price, start price, and percentage change.
+/start and /interval spin up a background loop that posts updates to the chat every n minutes.
 
-3. **Removing/Updating Calls:**  
-   Use `/removecall` or `/changestart` with the index shown in `/getalpha` to manage tracked calls.
+State Persistence
 
-4. **Periodic Updates:**  
-   Use `/start` to begin periodic posting of alpha call status. Use `/interval` to set how often updates are posted. Use `/stop` to end the loop.
+Calls are serialized to state.json on disk and reloaded on bot startup.
 
-5. **Persistence:**  
-   The bot saves tracked alpha calls to state.json and reloads them on startup.
+Setup & Deployment
+Prerequisites
+.NET 7 SDK or newer
 
-## Setup
+FSharp.Core (included via NuGet)
 
-1. Set the following environment variables:
-   - `TELEGRAM_TOKEN` – your Telegram bot token.
-   - `OPENAI_API_KEY` – your OpenAI API key.
+Telegram Bot token
 
-2. Build and run the bot:
-   ```
-   dotnet build
-   dotnet run
-   ```
+OpenAI API key
 
-3. Add the bot to your Telegram group and promote it to admin.
+Heroku account for deployment
 
-## Notes
+Environment Variables
+bash
+Copy
+Edit
+export TELEGRAM_TOKEN="<your-telegram-bot-token>"
+export OPENAI_API_KEY="<your-openai-api-key>"
+Local Build & Run
+bash
+Copy
+Edit
+git clone https://github.com/your-org/WepeBot.git
+cd WepeBot
+dotnet build
+dotnet run
+Heroku Deployment (Git-based)
+Install Heroku CLI
 
-- Only group admins can use the commands.
-- The bot requires internet access to query OpenAI and Dexscreener APIs.
-- All data is stored locally in state.json
+bash
+Copy
+Edit
+# macOS / Linux
+curl https://cli-assets.heroku.com/install.sh | sh
+
+# Windows: https://devcenter.heroku.com/articles/heroku-cli#download-and-install
+Log in to Heroku
+
+bash
+Copy
+Edit
+heroku login
+Create a Heroku App
+
+bash
+Copy
+Edit
+heroku create wepebot
+This adds a heroku Git remote.
+
+Set Configuration Variables
+
+bash
+Copy
+Edit
+heroku config:set TELEGRAM_TOKEN=<your-telegram-token>
+heroku config:set OPENAI_API_KEY=<your-openai-api-key>
+Deploy via Git Push
+
+bash
+Copy
+Edit
+git add .
+git commit -m "Deploy to Heroku"
+git push heroku main
+Every push to heroku main triggers a build and deploy automatically.
+
+View Logs
+
+bash
+Copy
+Edit
+heroku logs --tail
+Project Structure
+bash
+Copy
+Edit
+WepeBot/
+├─ Program.fs          # Main entry point with all handlers
+├─ WepeBot.fsproj      # F# project file
+├─ state.json          # Saved alpha calls
+├─ screenshots/        # Screenshots for README
+└─ README.md           # Project documentation
+Dependencies
+Telegram.Bot
+
+System.Net.Http
+
+System.Text.Json
+
+FSharp.Control.Tasks.V2.ContextInsensitive
+
+Roadmap
+Multi-chat support
+
+Web dashboard with historical charts
+
+Richer analytics & alerts
+
+Post-exam collaboration with another developer
+
+Contributing
+Fork the repo
+
+Create a feature branch (git checkout -b feature/xyz)
+
+Commit your changes (git commit -m "Add xyz")
+
+Push to your branch (git push origin feature/xyz)
+
+Open a Pull Request
