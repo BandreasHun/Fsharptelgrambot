@@ -15,14 +15,6 @@ Join our public Telegram group to see WepeBot in action (admin rights required):
 
 ---
 
-## Screenshots
-
-*(Add screenshots here. Example:)*
-![Add Alpha Call](screenshots/add_alpha_call.png)
-![Get Alpha List](screenshots/get_alpha_list.png)
-
----
-
 ## Features
 
 * **Add New Alpha Calls**
@@ -39,7 +31,9 @@ Join our public Telegram group to see WepeBot in action (admin rights required):
   Only group admins can manage calls.
 * **Persistence**
   Saves state in `state.json` and reloads on startup.
-
+  
+![Add Alpha Call](screenshots/add_alpha_call.png)
+![Get Alpha List](screenshots/get_alpha_list.png)
 ---
 
 ## Commands & Usage
