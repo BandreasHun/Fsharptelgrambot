@@ -1,6 +1,6 @@
-# WepeBot
+# TelegramBot
 
-**Real-time “alpha call” tracker for the Wepe community (≈1200 members), built in F#.**
+**Real-time “alpha call” tracker, built in F#.**
 
 WepeBot is a Telegram bot that automates tracking of new token listings (“alpha calls”), fetching live price data from Dexscreener and surfacing percentage changes directly in your group chat. It was created to save manual lookups and give the Wepe alpha group instant alerts. Once the exam period is over, I will collaborate with another developer to extend its features even further.
 
